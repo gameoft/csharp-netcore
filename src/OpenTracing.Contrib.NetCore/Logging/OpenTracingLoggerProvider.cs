@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using OpenTracing.Util;
 
 namespace OpenTracing.Contrib.NetCore.Logging
 {
@@ -11,9 +11,11 @@ namespace OpenTracing.Contrib.NetCore.Logging
     {
         private readonly ITracer _tracer;
 
-        public OpenTracingLoggerProvider(ITracer tracer)
+        public OpenTracingLoggerProvider()
         {
-            _tracer = tracer ?? throw new ArgumentNullException(nameof(tracer));
+            // HACK: We can't use Dependency Injection here because this would lead to a StackOverflowException
+            // if the ITracer needs a ILoggerFactory.
+            _tracer = GlobalTracer.Instance;
         }
 
         /// <inheritdoc/>
